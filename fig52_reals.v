@@ -120,11 +120,8 @@ Example is_semidef_pos_33 : semidef_pos_33 1 1 1 1 1 1 1 1 1.
     rewrite is_r_sqr.
     apply Rle_0_sqr. *)
 
-(* ====================================================== *)
-(* ====================================================== *)
-(* ====================================================== *)
 
-
+(* symmetric_22 Examples *)
 
 Example is_symmetric_22: symmetric_22 1 1 1 1.
 Proof.
@@ -142,6 +139,7 @@ Proof.
     auto.
     Qed.
 
+(* in_ellipsoid_Q Examples *)
 
 Example is_in_ellipsoid_Q :
     in_ellipsoid_Q 1 1 1 1 1 1.

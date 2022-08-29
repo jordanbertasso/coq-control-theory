@@ -53,55 +53,73 @@ Theorem mul_neg_1_r :
 Proof.
     Admitted.
 
-Theorem mult_factor : 
+Theorem mult_factor :
     forall a b x y : R, a * (x + y) + b * (x + y) = (a + b) * (x + y).
 Proof.
     intros.
     symmetry.
     set (x + y) as c.
-    rewrite Rmul_comm.
+    rewrite Rmult_comm.
     rewrite Rmult_plus_distr_l.
     set (c * b) as d.
     set (b * c) as e.
-    Admitted.
-
-
-(* semidef_pos_22 Examples *)
-
-Example not_semidef_pos_22 : semidef_pos_22 (-1) (-1) (-1) (-1).
-    Proof.
-        unfold semidef_pos_22.
-        intros.
-        destruct H as [HA HB].
-        rewrite mul_neg_1_r.
-        rewrite mul_neg_1_r.
-        Admitted.
-
-Print Rsqr.
+    assert (d = e). {subst d. subst e. rewrite Rmult_comm. reflexivity. }
+    rewrite H.
+    rewrite Rmult_comm.
+    reflexivity.
+    Qed.
 
 Theorem is_r_sqr (n : R) : n * n = Rsqr n.
 Proof.
-    Admitted.
-
-        
-Example is_semidef_pos_22: semidef_pos_22 1 1 1 1.
-    Proof.
-        unfold semidef_pos_22.
-        intros.
-        destruct H as [HA HB].
-        rewrite Rmult_1_r.
-        rewrite Rmult_1_r.
-        rewrite mult_factor.
-        set (a + b) as c.
-        Admitted.
-        (* rewrite Rle_ge.
-        rewrite is_r_sqr.
-        apply Rle_0_sqr. *)
+    unfold Rsqr.
+    reflexivity.
+    Qed.
         
 
-Example is_semidef_pos_22_b: semidef_pos_22 1 2 2 1.
+(* semidef_pos_22 Examples *)
+
+(* Need to negate hypothesis *)
+Example not_semidef_pos_22 : semidef_pos_22 (-1) (-1) (-1) (-1).
 Proof.
+    unfold semidef_pos_22.
+    unfold not.
+    intros.
+    destruct H as [HA HB].
+    rewrite mul_neg_1_r.
+    rewrite mul_neg_1_r.
+    rewrite mult_factor.
+    set (-a + -b) as c.
+    (* Need to show this is false *)
     Admitted.
+
+(* Need to negate hypothesis *)
+Example not_semidef_pos_22_b: semidef_pos_22 1 2 2 1.
+Proof.
+    unfold semidef_pos_22.
+    intros.
+    destruct H as [HA HB].
+    rewrite Rmult_1_r.
+    rewrite Rmult_1_r.
+    set (a * 2) as c.
+    set (b * 2) as d.
+    (* This is obiviously untrue *)
+    Admitted.
+
+
+Example is_semidef_pos_22: semidef_pos_22 1 1 1 1.
+Proof.
+    unfold semidef_pos_22.
+    intros.
+    destruct H as [HA HB].
+    rewrite Rmult_1_r.
+    rewrite Rmult_1_r.
+    rewrite mult_factor.
+    set (a + b) as c.
+    rewrite is_r_sqr.
+    apply Rle_ge.
+    apply Rle_0_sqr.
+    Qed.
+        
 
 (* semidef_pos_33 Examples *)
 

@@ -279,6 +279,7 @@ Theorem First_Iteration (x1 x2 yc x1b x2b : R):
     (* x1b = 0.499 * x1 - 0.05 * x2 *)
     /\
     x2b = 0.01 * x1 + x2 (* x2b = 0*)
+    (* \tilde P - Eqn 14 *)
     -> in_ellipsoid_Q 1483.48 (Ropp 25.7711) (Ropp 25.7711) 406.11 x1b x2b.
 Proof.
 Proof.

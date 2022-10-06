@@ -263,6 +263,46 @@ Proof.
 (* in_ellipsoid x1 x2 /\ sat y1 /\ sat y2 /\ z = do_controller x1 x2 y1 y2 matrix -> in_ellipsoid z *)
 (* z is the result of the computation *)
 
+(* # 1
+x1 = 0
+x2 = 0
+
+-1 <= x1b <= 1
+x2b = 0
+
+---
+
+# 2
+-1 <= x <= 1
+x2 = 0
+
+-1 <= y <= 1
+
+x1b = 0.499 * x1 + y
+-0.499 - 1 <= x1b <= 0.499 + 1
+
+x2b = 0.01 * x1 + x2
+- 0.01 <= x2b <= 0.01
+
+---
+
+# 3
+-0.499 - 1 <= x1 <= 0.499 + 1
+- 0.01 <= x2 <= 0.01
+
+x1b = 0.499 * x1 + y
+0.499 * (-0.499 - 1) - 1 <= x1b <= 0.499 * (0.499 + 1) + 1
+
+x2b = 0.01 * x1 + x2
+0.01 * (-0.499 - 1) - 0.01 <= x2b <= 0.01 * (0.499 + 1) + 0.01
+
+---
+
+# 4
+0.499 * (-0.499 - 1) - 1 <= x1 <= 0.499 * (0.499 + 1) + 1
+0.01 * (-0.499 - 1) - 0.01 <= x2 <= 0.01 * (0.499 + 1) + 0.01 *)
+
+
 (* Instead of receiving y and yd to calculate yc, we just input yc and saturate it *)
 Theorem First_Iteration (x1 x2 yc x1b x2b : R): 
     (* xc = zeros(2,1); *)
@@ -386,4 +426,69 @@ Proof.
             destruct H as [A [B [C [D [E F]]]]].
             nra.
             nra.
+Qed.
+
+Theorem a (x1 x2 : R): 
+    in_ellipsoid_Q 0.0006742 0.0000428 0.0000428 0.0024651 x1 x2
+    ->
+    -0.0259653615419 <= x1 <= 0.0259653615419
+    /\
+    -0.04962 <= x2 <= 0.04962.
+Proof.
+    intros.
+    destruct H as [A [B [C1 [C2 C3]]]].
+    split.
+    nra.
+Qed.
+
+
+(* Will try to get x1 and x2 isolated in their own hypothesis *)
+Theorem Loop (x1 x2 yc x1b x2b s : R): 
+    in_ellipsoid_Q 0.0006742 0.0000428 0.0000428 0.0024651 x1 x2
+    /\ 
+    -1 <= yc <= 1
+    /\
+    (* This is implied in the hypothesis check notes.md *)
+    -0.04962 <= x2 <= 0.04962
+    /\
+    (* This is already in the hypothesis from 1 * 0.0006742 - x1 * x1 >= 0. I just cant put it into this form. *)
+    -0.0259653615419 <= x1 <= 0.0259653615419
+    /\ 
+    x1b = 0.499 * x1 - 0.05 * x2 + yc
+    /\
+    x2b = 0.01 * x1 + x2
+    -> 
+    (* \tilde P - Eqn 14 *)
+    in_ellipsoid_Q 1483.48 (Ropp 25.7711) (Ropp 25.7711) 406.11 x1b x2b.
+Proof.
+    intros.
+    destruct H as [A [B [D [E F]]]].
+    unfold in_ellipsoid_Q in A.
+    destruct A as [A1 [A2 A3]].
+    unfold semidef_pos_33_determinant in A3.
+    destruct A3 as [A31 [A32 A33]].
+    split.
+        unfold semidef_pos_22_determinant.
+        nra.
+        split.
+        reflexivity.
+        split.
+        nra.
+        split.
+        rewrite Rmult_1_l.
+        (* 
+        It should be possible to prove the next statement
+
+        1. -sqrt(0.0006742) <= x1 <= sqrt(0.0006742)
+        2. aprox -0.05 <= x2 <= 0.05
+        3. -1 <= yc <= 1
+
+        0.499 * -sqrt(0.0006742) -0.05 * 0.05 - 1 <= x1b <= 0.499*sqrt(0.0006742) + 0.05 * 0.05 + 1
+        ✅ - 1.01545671541 <= x1b <= 1.01545671541
+
+
+        https://www.wolframalpha.com/input?i=0.0006742+*+0.0024651+-+0.0000428+*+0.0000428+-+x1+*+x1+*+0.0024651+-+0.0000428+*+x2+*+x1+%2B+x1+*+x2+*+0.0000428+-+0.0006742+*+x2+*+x2+%3E%3D+0%2C+-sqrt%280.0006742%29+%3C%3D+x1+%3C%3D+sqrt%280.0006742%29
+        0.0006742 * 0.0024651 - 0.0000428 * 0.0000428 - x1 * x1 * 0.0024651  - 0.0000428 * x2 * x1 + x1 * x2 * 0.0000428  - 0.0006742 * x2 * x2 >= 0 *)
+        nra.
+        nra.
 Qed.

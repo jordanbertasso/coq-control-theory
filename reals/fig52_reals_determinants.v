@@ -328,7 +328,38 @@ Qed.
 
 (* Instead of receiving y and yd to calculate yc, we just input yc and saturate it *)
 Theorem Third_Iteration (x1 x2 yc x1b x2b : R): 
-    -0.499 - 1 <= x1 <= 0.499 + 1 /\ x2 = 0.01 * x1
+    -0.499 - 1 <= x1 <= 0.499 + 1 /\ -0.01 <= x2 <= 0.01
+    /\ 
+    in_ellipsoid_Q 0.0006742 0.0000428 0.0000428 0.0024651 x1 x2
+    /\ 
+    -1 <= yc <= 1
+    /\ 
+    x1b = 0.499 * x1 - 0.05 * x2 + yc
+    /\
+    x2b = 0.01 * x1 + x2
+    (* \tilde P - Eqn 14 *)
+    -> in_ellipsoid_Q 1483.48 (Ropp 25.7711) (Ropp 25.7711) 406.11 x1b x2b.
+Proof.
+Proof.
+    intros.
+    split.
+        - 
+        unfold semidef_pos_22_determinant.
+        nra.
+        - split.
+            + 
+            reflexivity.
+            +
+            split. nra.
+            split.
+            destruct H as [A [B [C [D [E F]]]]].
+            nra.
+            nra.
+Qed.
+
+(* Instead of receiving y and yd to calculate yc, we just input yc and saturate it *)
+Theorem Forth_Iteration (x1 x2 yc x1b x2b : R): 
+    0.499*(-0.499 - 1) - 1 <= x1 <= 0.499*(0.499 + 1) + 1 /\ 0.01 * (-0.499 -1) - 0.01 <= x2 <= 0.01 * (0.499 + 1) + 0.01
     /\ 
     in_ellipsoid_Q 0.0006742 0.0000428 0.0000428 0.0024651 x1 x2
     /\ 

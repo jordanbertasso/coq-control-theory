@@ -102,14 +102,14 @@ Proof.
 Example not_semidef_pos_22 : ~ semidef_pos_22_determinant (-1) (-1) (-1) (-1).
 Proof.
     unfold semidef_pos_22_determinant.
-    nra.
-    Qed.
+    lra.
+Qed.
 
 Example not_semidef_pos_22_b: ~ semidef_pos_22_determinant 1 2 2 1.
 Proof.
     unfold semidef_pos_22_determinant.
-    nra.
-    Qed.
+    lra.
+Qed.
 
 
 Example is_semidef_pos_22: semidef_pos_22 1 1 1 1.
@@ -123,15 +123,13 @@ Proof.
     rewrite is_r_sqr.
     apply Rle_ge.
     apply Rle_0_sqr.
-    Qed.
+Qed.
 
 Example is_semidef_pos_22_determinant: semidef_pos_22_determinant 1 1 1 1.
 Proof.
     unfold semidef_pos_22_determinant.
-    split.
-    nra.
-    nra.
-    Qed.
+    lra.
+Qed.
 
 
 (* semidef_pos_33 Examples *)
@@ -146,7 +144,12 @@ Example is_semidef_pos_33 : semidef_pos_33 1 1 1 1 1 1 1 1 1.
     rewrite mult_factor.
     set (a + b + c) as d.
     nra.
-    Qed.
+Qed.
+
+Example is_semidef_pos_33_determinante : semidef_pos_33_determinant 1 1 1 1 1 1 1 1 1.
+    unfold semidef_pos_33_determinant.
+    nra.
+Qed.
 
 
 (* symmetric_22 Examples *)
@@ -175,12 +178,12 @@ Proof.
     unfold in_ellipsoid_Q.
     split.
     unfold semidef_pos_22_determinant.
-    nra.
+    lra.
     split.
     apply is_symmetric_22.
     unfold semidef_pos_33_determinant.
-    nra.
-    Qed.
+    lra.
+Qed.
 
 
 (* Jobredeaux example - Figure 32 *)
@@ -304,7 +307,7 @@ x2b = 0.01 * x1 + x2
 
 
 (* Instead of receiving y and yd to calculate yc, we just input yc and saturate it *)
-Theorem First_Iteration (x1 x2 yc x1b x2b : R): 
+Theorem first_iteration (x1 x2 yc x1b x2b : R): 
     (* xc = zeros(2,1); *)
     x1 = 0 /\ x2 = 0
     /\ 
@@ -318,17 +321,16 @@ Theorem First_Iteration (x1 x2 yc x1b x2b : R):
     (* \tilde P - Eqn 14 *)
     -> in_ellipsoid_Q 1483.48 (Ropp 25.7711) (Ropp 25.7711) 406.11 x1b x2b.
 Proof.
-Proof.
     intros.
     split.
         - 
         unfold semidef_pos_22_determinant.
-        nra.
+        lra.
         - split.
             + 
             reflexivity.
             +
-            split. nra.
+            split. lra.
             split.
             destruct H as [A [B [C [D [E F]]]]].
             nra.
@@ -336,7 +338,7 @@ Proof.
 Qed.
 
 (* Instead of receiving y and yd to calculate yc, we just input yc and saturate it *)
-Theorem Second_Iteration (x1 x2 yc x1b x2b : R): 
+Theorem second_iteration (x1 x2 yc x1b x2b : R): 
     -1 <= x1 <= 1 /\ x2 = 0
     /\ 
     in_ellipsoid_Q 0.0006742 0.0000428 0.0000428 0.0024651 x1 x2
@@ -367,7 +369,7 @@ Proof.
 Qed.
 
 (* Instead of receiving y and yd to calculate yc, we just input yc and saturate it *)
-Theorem Third_Iteration (x1 x2 yc x1b x2b : R): 
+Theorem third_iteration (x1 x2 yc x1b x2b : R): 
     -0.499 - 1 <= x1 <= 0.499 + 1 /\ -0.01 <= x2 <= 0.01
     /\ 
     in_ellipsoid_Q 0.0006742 0.0000428 0.0000428 0.0024651 x1 x2
@@ -398,7 +400,7 @@ Proof.
 Qed.
 
 (* Instead of receiving y and yd to calculate yc, we just input yc and saturate it *)
-Theorem Forth_Iteration (x1 x2 yc x1b x2b : R): 
+Theorem forth_iteration (x1 x2 yc x1b x2b : R): 
     0.499*(-0.499 - 1) - 1 <= x1 <= 0.499*(0.499 + 1) + 1 /\ 0.01 * (-0.499 -1) - 0.01 <= x2 <= 0.01 * (0.499 + 1) + 0.01
     /\ 
     in_ellipsoid_Q 0.0006742 0.0000428 0.0000428 0.0024651 x1 x2
@@ -443,7 +445,7 @@ Qed.
 
 
 (* Will try to get x1 and x2 isolated in their own hypothesis *)
-Theorem Loop (x1 x2 yc x1b x2b s : R): 
+Theorem loop_cheating (x1 x2 yc x1b x2b s : R): 
     in_ellipsoid_Q 0.0006742 0.0000428 0.0000428 0.0024651 x1 x2
     /\ 
     -1 <= yc <= 1
@@ -463,6 +465,51 @@ Theorem Loop (x1 x2 yc x1b x2b s : R):
 Proof.
     intros.
     destruct H as [A [B [D [E F]]]].
+    unfold in_ellipsoid_Q in A.
+    destruct A as [A1 [A2 A3]].
+    unfold semidef_pos_33_determinant in A3.
+    destruct A3 as [A31 [A32 A33]].
+    split.
+        unfold semidef_pos_22_determinant.
+        nra.
+        split.
+        reflexivity.
+        split.
+        nra.
+        split.
+        rewrite Rmult_1_l.
+        (* 
+        It should be possible to prove the next statement
+
+        1. -sqrt(0.0006742) <= x1 <= sqrt(0.0006742)
+        2. aprox -0.05 <= x2 <= 0.05
+        3. -1 <= yc <= 1
+
+        0.499 * -sqrt(0.0006742) -0.05 * 0.05 - 1 <= x1b <= 0.499*sqrt(0.0006742) + 0.05 * 0.05 + 1
+        ✅ - 1.01545671541 <= x1b <= 1.01545671541
+
+
+        https://www.wolframalpha.com/input?i=0.0006742+*+0.0024651+-+0.0000428+*+0.0000428+-+x1+*+x1+*+0.0024651+-+0.0000428+*+x2+*+x1+%2B+x1+*+x2+*+0.0000428+-+0.0006742+*+x2+*+x2+%3E%3D+0%2C+-sqrt%280.0006742%29+%3C%3D+x1+%3C%3D+sqrt%280.0006742%29
+        0.0006742 * 0.0024651 - 0.0000428 * 0.0000428 - x1 * x1 * 0.0024651  - 0.0000428 * x2 * x1 + x1 * x2 * 0.0000428  - 0.0006742 * x2 * x2 >= 0 *)
+        nra.
+        nra.
+Qed.
+
+
+Theorem loop (x1 x2 yc x1b x2b s : R): 
+    in_ellipsoid_Q 0.0006742 0.0000428 0.0000428 0.0024651 x1 x2
+    /\ 
+    -1 <= yc <= 1
+    /\ 
+    x1b = 0.499 * x1 - 0.05 * x2 + yc
+    /\
+    x2b = 0.01 * x1 + x2
+    -> 
+    (* \tilde P - Eqn 14 *)
+    in_ellipsoid_Q 1483.48 (Ropp 25.7711) (Ropp 25.7711) 406.11 x1b x2b.
+Proof.
+    intros.
+    destruct H as [A [B [D E]]].
     unfold in_ellipsoid_Q in A.
     destruct A as [A1 [A2 A3]].
     unfold semidef_pos_33_determinant in A3.

@@ -26,11 +26,18 @@ Open Scope R_scope.
 
 Definition semidef_pos_22 (x11 x12 x21 x22 : R) :=
     forall (a b : R),
-    a <> 0 \/ b <> 0 -> 
-        (a*(a*x11 + b*x12) + b*(a*x21 + b*x22)) >= 0.
+    a <> 0
+    \/
+    b <> 0
+    -> 
+    (a * (a * x11 + b * x12)
+    +
+    b * (a * x21 + b * x22)) >= 0.
 
 Definition semidef_pos_22_determinant (x11 x12 x21 x22 : R) :=
-    x11 >= 0 /\ x11*x22 - x12*x21 >= 0.
+    x11 >= 0
+    /\
+    x11 * x22 - x12 * x21 >= 0.
     
 Definition semidef_pos_33 (x11 x12 x13 x21 x22 x23 x31 x32 x33: R) :=
     forall (a b c : R),
@@ -445,7 +452,7 @@ Qed.
 
 
 (* Will try to get x1 and x2 isolated in their own hypothesis *)
-Theorem loop_cheating (x1 x2 yc x1b x2b s : R): 
+Theorem loop_stable_augmented_hypothesis (x1 x2 yc x1b x2b : R): 
     in_ellipsoid_Q 0.0006742 0.0000428 0.0000428 0.0024651 x1 x2
     /\ 
     -1 <= yc <= 1
@@ -467,36 +474,22 @@ Proof.
     destruct H as [A [B [D [E F]]]].
     unfold in_ellipsoid_Q in A.
     destruct A as [A1 [A2 A3]].
-    unfold semidef_pos_33_determinant in A3.
-    destruct A3 as [A31 [A32 A33]].
+    destruct A3.
     split.
         unfold semidef_pos_22_determinant.
-        nra.
-        split.
+        lra.
+    split.
         reflexivity.
-        split.
-        nra.
-        split.
+    split.
+        lra.
+    split.
         rewrite Rmult_1_l.
-        (* 
-        It should be possible to prove the next statement
-
-        1. -sqrt(0.0006742) <= x1 <= sqrt(0.0006742)
-        2. aprox -0.05 <= x2 <= 0.05
-        3. -1 <= yc <= 1
-
-        0.499 * -sqrt(0.0006742) -0.05 * 0.05 - 1 <= x1b <= 0.499*sqrt(0.0006742) + 0.05 * 0.05 + 1
-        ✅ - 1.01545671541 <= x1b <= 1.01545671541
-
-
-        https://www.wolframalpha.com/input?i=0.0006742+*+0.0024651+-+0.0000428+*+0.0000428+-+x1+*+x1+*+0.0024651+-+0.0000428+*+x2+*+x1+%2B+x1+*+x2+*+0.0000428+-+0.0006742+*+x2+*+x2+%3E%3D+0%2C+-sqrt%280.0006742%29+%3C%3D+x1+%3C%3D+sqrt%280.0006742%29
-        0.0006742 * 0.0024651 - 0.0000428 * 0.0000428 - x1 * x1 * 0.0024651  - 0.0000428 * x2 * x1 + x1 * x2 * 0.0000428  - 0.0006742 * x2 * x2 >= 0 *)
         nra.
         nra.
 Qed.
 
 
-Theorem loop (x1 x2 yc x1b x2b s : R): 
+Theorem loop_stable (x1 x2 yc x1b x2b s : R): 
     in_ellipsoid_Q 0.0006742 0.0000428 0.0000428 0.0024651 x1 x2
     /\ 
     -1 <= yc <= 1
